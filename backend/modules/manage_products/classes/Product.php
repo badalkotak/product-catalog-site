@@ -24,11 +24,11 @@ class Product
         }
         else
         {
-            $sql = "SELECT * FROM `products` WHERE `category_id` = '$category_id'";
+            $sql = "SELECT * FROM `products` WHERE `cat_id` = '$category_id'";
         }
 
        	$result = $this->connection->query($sql);
-        if ($result->num_rows > 0) {
+        if ($result) {
             return $result;
         } else {
             return null;

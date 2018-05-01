@@ -30,16 +30,36 @@ include("../../../Resources/Dashboard/header.php");
     <div class="box">
     <div class="box-body">
 
-      <div class='col-md-6 col-sm-6 col-xs-6'>
-              <center><a href='../../manage_sub_category/functions'><image src='../../../Resources/images/plus.png' height=100 width=88></image><br><h4>Manage Sub-Category</h4>
+    <!-- <div class="row"> -->
+      <div class='col-md-4 col-sm-6 col-xs-6'>
+              <center><a href='../../manage_category/functions'><image src='../../../Resources/images/plus.png' height=100 width=88></image><br><h4>Manage Category</h4>
           </a></center>
             </div>
 
-      <div class='col-md-6 col-sm-6 col-xs-6'>
+      <div class='col-md-4 col-sm-6 col-xs-6'>
               <center><a href='../../manage_products/functions'><image src='../../../Resources/images/plus.png' height=100 width=88></image><br><h4>Manage Product</h4>
           </a></center>
             </div>
 
+      <div class='col-md-4 col-sm-6 col-xs-6'>
+              <center><a href='../../manage_events/functions'><image src='../../../Resources/images/plus.png' height=100 width=88></image><br><h4>Manage Events</h4>
+          </a></center>
+            </div>
+    <!-- </div> -->
+
+
+
+    <!-- <div class="row"> -->
+      <div class='col-md-4 col-sm-6 col-xs-6'>
+              <center><a href='../../manage_invester_corner/functions'><image src='../../../Resources/images/plus.png' height=100 width=88></image><br><h4>Manage Invester Corner</h4>
+          </a></center>
+            </div>
+
+      <div class='col-md-4 col-sm-6 col-xs-6'>
+              <center><a href='../../manage_home_page/functions'><image src='../../../Resources/images/plus.png' height=100 width=88></image><br><h4>Manage Home Page</h4>
+          </a></center>
+            </div>
+    <!-- </div> -->
     </div>
     </div>
 
@@ -55,7 +75,7 @@ include("../../../Resources/Dashboard/header.php");
       <!-- Anything you want -->
     </div>
     <!-- Default to the left -->
-    <strong>Copyright &copy; 2018 Winout.</strong> All rights reserved.
+    <strong>Copyright &copy; 2018 Golkunda.</strong> All rights reserved.
   </footer>
 
   <!-- Control Sidebar -->
