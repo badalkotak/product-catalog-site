@@ -3,6 +3,7 @@ require_once("../../../classes/DBConnect.php");
 require_once("../../../classes/Constants.php");
 require_once("../classes/Product.php");
 
+// error_reporting(0);
 $dbConnect = new DBConnect(Constants::SERVER_NAME,
     Constants::DB_USERNAME,
     Constants::DB_PASSWORD,
@@ -10,12 +11,16 @@ $dbConnect = new DBConnect(Constants::SERVER_NAME,
 
 $product = new Product($dbConnect->getInstance());
 
-$name = $_REQUEST['name'];
-$cat = $_REQUEST['cat'];
-$desp = $_REQUEST['desp'];
-$file_name=$_FILES['file']['name'];
-// $url_file=$_FILE['file'];
-if($name=="" || $cat==0 || $desp=="")
+$con = $dbConnect->getInstance();
+$name=$_REQUEST['name'];
+$name = mysqli_real_escape_string($con,$name);
+$desp=$_REQUEST['desp'];
+$desp = mysqli_real_escape_string($con,$desp);
+$cat_id=$_REQUEST['cat'];
+$url_file=$_FILE['file'];
+$today = date("d/m/Y");
+
+if($name == "" || $desp == "" || $cat_id == 0 || $url_file == "")
 {
 	$message = Constants::EMPTY_PARAMETERS;
 	echo "<script>alert($message);window.location.href='index.php';</script>";
@@ -44,8 +49,8 @@ $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
 
 	if(move_uploaded_file($_FILES['file']['tmp_name'], $targetfolder))
 	{
-		$insert=$product->insertProducts($name,$desp,$newFileName,$cat);
-
+		$insert=$product->insertProducts($name,$cat_id,$newFileName,$desp,$today);
+		echo $insert;
 		if($insert)
 		{
 			$message = "New Product is ".Constants::INSERT_SUCCESS_MSG;

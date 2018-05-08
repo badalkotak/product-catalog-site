@@ -1,6 +1,6 @@
 <?php
 
-require_once("../../../classes/Constants.php");
+require_once("Constants.php");
 
 class InvesterCorner
 {

@@ -1,7 +1,7 @@
 <?php
 require_once("../../../classes/DBConnect.php");
 require_once("../../../classes/Constants.php");
-require_once("../classes/MainCategory.php");
+require_once("../classes/Home.php");
 
 error_reporting(0);
 $dbConnect = new DBConnect(Constants::SERVER_NAME,
@@ -9,13 +9,21 @@ $dbConnect = new DBConnect(Constants::SERVER_NAME,
     Constants::DB_PASSWORD,
     Constants::DB_NAME);
 
-$category = new MainCategory($dbConnect->getInstance());
+$home= new Home($dbConnect->getInstance());
+
+$count = $home->countHome();
+
+if($count >= 3)
+{
+	$message = "Cannot add more than 3 cover pages for Home page";
+	echo "<script>alert('$message');window.location.href='index.php';</script>";
+	exit(0);
+}
 
 $con = $dbConnect->getInstance();
 
-$name = $_REQUEST['name'];
-$name = mysqli_real_escape_string($con,$name);
-$layout = $_REQUEST['layout'];
+$title = $_REQUEST['name'];
+$title = mysqli_real_escape_string($con,$title);
 $file_name=$_FILES['file']['name'];
 $tag_line=$_REQUEST['tag'];
 $tag_line = mysqli_real_escape_string($con,$tag_line);
@@ -39,7 +47,7 @@ function generatePassword($length = 4) {
 }
 $fileName=generatePassword();
 
-$targetfolder = "cover_images/";
+$targetfolder = "home_images/";
 $file_type=$_FILES['file']['type'];
 $target_file = $targetfolder . basename($_FILES["file"]["name"]);
 $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
@@ -49,17 +57,17 @@ $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
 
 	if(move_uploaded_file($_FILES['file']['tmp_name'], $targetfolder))
 	{
-		$insert=$category->insertCategory($name,$newFileName,$tag_line,$layout);
+		$insert=$home->insertHome($newFileName,$title,$tag_line);
 
 		if($insert)
 		{
-			$message = "New Category is ".Constants::INSERT_SUCCESS_MSG;
+			$message = "Home Page item is ".Constants::INSERT_SUCCESS_MSG;
 			echo "<script>alert('$message');window.location.href='index.php';</script>";
 		}
 		else
 		{
 			unlink($targetfolder);
-			$message = Constants::INSERT_FAIL_MSG."Category";
+			$message = Constants::INSERT_FAIL_MSG."Home Page item";
 			echo "<script>alert('$message');window.location.href='index.php';</script>";	
 		}
 	}

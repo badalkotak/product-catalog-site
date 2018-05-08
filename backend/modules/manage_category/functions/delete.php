@@ -16,7 +16,7 @@ $delete = $category->deleteCategory($cat_id);
 
 if($delete)
 {
-	unlink('cover_images/'.$oldImg);
+	// unlink('cover_images/'.$oldImg);
 	$message = "Category is ".Constants::DELETE_SUCCESS_MSG;
 	echo "<script>alert('$message');window.location.href='index.php';</script>";
 }

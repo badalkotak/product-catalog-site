@@ -1,8 +1,8 @@
 <?php
 
-require_once("../../../classes/Constants.php");
-require_once("../../../classes/DBConnect.php");
-require_once("../../manage_products/classes/Product.php");
+require_once("Constants.php");
+require_once("DBConnect.php");
+require_once("Product.php");
 
 class MainCategory
 {
@@ -30,6 +30,7 @@ class MainCategory
         }
         else if($cat_id != 0)
         {
+            echo "In get $cat_id";
             $sql = "SELECT * FROM `category` WHERE `id`='$cat_id'";
         }
 
@@ -43,6 +44,22 @@ class MainCategory
     	{
     		return null;
     	}
+    }
+
+    function getCategoryWithLayout($layout)
+    {
+        $sql = "SELECT * FROM category WHERE layout = '$layout'";
+
+        $result = $this->connection->query($sql);
+
+        if($result->num_rows > 0)
+        {
+            return $result;
+        }
+        else
+        {
+            return null;
+        }
     }
 
     function insertCategory($name,$cover_image,$tag_line,$layout = 0)

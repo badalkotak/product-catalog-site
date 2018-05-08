@@ -3,15 +3,14 @@ include("../../../Resources/Dashboard/header.php");
 
 require_once("../../../classes/DBConnect.php");
 require_once("../../../classes/Constants.php");
-require_once("../classes/Product.php");
-require_once("../../manage_category/classes/MainCategory.php");
+require_once("../classes/InvesterCorner.php");
 
 $dbConnect = new DBConnect(Constants::SERVER_NAME,
     Constants::DB_USERNAME,
     Constants::DB_PASSWORD,
     Constants::DB_NAME);
 
-$category = new MainCategory($dbConnect->getInstance());
+$invester = new InvesterCorner($dbConnect->getInstance());
 ?>
 <ul class="sidebar-menu">
         <li class="active"><a href="../../login/functions/Dashboard.php"><i class="fa fa-home"></i> <span>Home</span></a></li>
@@ -26,8 +25,8 @@ $category = new MainCategory($dbConnect->getInstance());
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Products
-        <small>Manage your website Products</small>
+        Invester Corner
+        <small>Manage your website Invester Corner</small>
       </h1>
       <!-- <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
@@ -44,46 +43,15 @@ $category = new MainCategory($dbConnect->getInstance());
 
     <form class="form-horizontal" action="insert.php" method="post" id="addSubCategory" enctype="multipart/form-data">
       <div class="form-group">
-        <label class="control-label col-sm-2" for="name">Product Name:</label>
+        <label class="control-label col-sm-2" for="title">Title:</label>
         <div class="col-sm-10">
-          <input type="text" class="form-control" id="name" name="name">
+          <input type="text" class="form-control" id="title" name="title">
         </div>
       </div>
 
       <div class="form-group">
-        <label class="control-label col-sm-2" for="desp">Description:</label>
-        <div class="col-sm-10">
-        <textarea class="form-control" rows="3" id="desp" name="desp"></textarea>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label class="control-label col-sm-2" for="cat">Select Category</label>
-        <div class="col-sm-10"> 
-          <select class="form-control" id="cat" name="cat">
-            <option value=0>Select Category</option>
-          <?php
-          $category_result=$category->getCategory();
-          $i = 0;
-          if($category_result!=null)
-          {
-              while($row = $category_result->fetch_assoc())
-              {
-                $i++;
-                $cat_name=$row['name'];
-                $cat_id=$row['id'];
-
-                echo '<option value='.$cat_id.'>'.$cat_name.'</option>';
-              }
-          }
-          ?>
-          </select>
-        </div>
-      </div>
-
-      <div class="form-group">
-          <label class="control-label col-sm-2" for="product_img">Product Image</label>
-          <input type="file" id="product_img" name="file">
+          <label class="control-label col-sm-2" for="file">File:</label>
+          <input type="file" id="file" name="file">
         </div>
       <div class="form-group"> 
         <div class="col-sm-offset-2 col-sm-10">
@@ -101,9 +69,8 @@ $category = new MainCategory($dbConnect->getInstance());
         <thead>
           <tr>
             <th>Sr. No.</th>
-            <th>Product Name</th>
-            <th>Description</th>
-            <th>Product Image</th>
+            <th>Title</th>
+            <th>File</th>
             <th>Date Added</th>
             <th>Edit</th>
             <th>Delete</th>
@@ -111,29 +78,25 @@ $category = new MainCategory($dbConnect->getInstance());
         </thead>
         <tbody>
         <?php
-        $product = new Product($dbConnect->getInstance());
-        $getProducts = $product->getProducts(0);
+        $getIC = $invester->getIC(0);
         $i = 0;
-        if($getProducts!=null)
+        if($getIC!=null)
         {
-            while($product_row = $getProducts->fetch_assoc())
+            while($ic_row = $getIC->fetch_assoc())
             {
                 $i++;
-                $name=$product_row['name'];
-                $desp=$product_row['desp'];
-                $product_image=$product_row['image'];
-                $cat_id=$product_row['cat_id'];
-                $date_added=$product_row['date_added'];
-                $product_id=$product_row['id'];
+                $title=$ic_row['title'];
+                $file=$ic_row['file'];
+                $date_added=$ic_row['date_added'];
+                $ic_id=$ic_row['id'];
 
                 echo "<tr>";
                   echo "<td>$i</td>";
-                  echo "<td>$name</td>";
-                  echo "<td>$desp</td>";
-                  echo "<td><a href=product_images/$product_image><center><i style='color:#000000' class='fa fa-eye'><br>View</center></i></a></td>";
+                  echo "<td>$title</td>";
+                  echo "<td><a href=files/$file><center><i style='color:#000000' class='fa fa-eye'><br>View</center></i></a></td>";
                   echo "<td>$date_added</td>";
-                  echo "<form action=edit.php><td><button type='submit' class='btn btn-warning' name='edit' value='$product_id'>Edit</button></form>";
-                  echo "<form action=delete.php><td><button type='submit' class='btn btn-danger' name='delete' value='$product_id'>Delete</button></td></form>";
+                  echo "<form action=edit.php><td><button type='submit' class='btn btn-warning' name='edit' value='$ic_id'>Edit</button></td></form>";
+                  echo "<form action=delete.php><td><button type='submit' class='btn btn-danger' name='delete' value='$ic_id'>Delete</button></td></form>";
                 echo "<tr>";
             }
         }
@@ -216,16 +179,16 @@ $(document).ready(function(){
 $(document).ready(function(){
 
   $("#submit").click(function(){
-    var product_name=$("#name").val();
+    var title=$("#title").val();
     // var passwd=$("#passwd").val();
-    var desp=$("#desp").val();
     // var desp=$("#desp").val();
-    var product_img=$("#product_img").val();
-    var cat=$("#cat").val();
+    // var desp=$("#desp").val();
+    var file=$("#file").val();
+    // var cat=$("#cat").val();
 
-    var status = false;
+    // var status = false;
 
-    if(product_name=="" || desp=="" || cat == 0 || product_img=="")
+    if(title=="" || file=="")
     {
       var alert_icon = document.createElement('i');
       alert_icon.setAttribute('class', 'fa fa-exclamation-triangle');

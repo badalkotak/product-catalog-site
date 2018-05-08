@@ -3,15 +3,15 @@ include("../../../Resources/Dashboard/header.php");
 
 require_once("../../../classes/DBConnect.php");
 require_once("../../../classes/Constants.php");
-require_once("../classes/Product.php");
-require_once("../../manage_category/classes/MainCategory.php");
+require_once("../classes/Home.php");
 
 $dbConnect = new DBConnect(Constants::SERVER_NAME,
     Constants::DB_USERNAME,
     Constants::DB_PASSWORD,
     Constants::DB_NAME);
 
-$category = new MainCategory($dbConnect->getInstance());
+// $category = new MainCategory($dbConnect->getInstance());
+$home = new Home($dbConnect->getInstance());
 ?>
 <ul class="sidebar-menu">
         <li class="active"><a href="../../login/functions/Dashboard.php"><i class="fa fa-home"></i> <span>Home</span></a></li>
@@ -26,8 +26,8 @@ $category = new MainCategory($dbConnect->getInstance());
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Products
-        <small>Manage your website Products</small>
+        Home Page
+        <small>Manage your website Home Page</small>
       </h1>
       <!-- <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
@@ -44,47 +44,24 @@ $category = new MainCategory($dbConnect->getInstance());
 
     <form class="form-horizontal" action="insert.php" method="post" id="addSubCategory" enctype="multipart/form-data">
       <div class="form-group">
-        <label class="control-label col-sm-2" for="name">Product Name:</label>
+        <label class="control-label col-sm-2" for="name">Title Text:</label>
         <div class="col-sm-10">
           <input type="text" class="form-control" id="name" name="name">
         </div>
       </div>
 
       <div class="form-group">
-        <label class="control-label col-sm-2" for="desp">Description:</label>
+        <label class="control-label col-sm-2" for="tag">Tag Line:</label>
         <div class="col-sm-10">
-        <textarea class="form-control" rows="3" id="desp" name="desp"></textarea>
+          <input type="text" class="form-control" id="tag" name="tag">
         </div>
       </div>
 
       <div class="form-group">
-        <label class="control-label col-sm-2" for="cat">Select Category</label>
-        <div class="col-sm-10"> 
-          <select class="form-control" id="cat" name="cat">
-            <option value=0>Select Category</option>
-          <?php
-          $category_result=$category->getCategory();
-          $i = 0;
-          if($category_result!=null)
-          {
-              while($row = $category_result->fetch_assoc())
-              {
-                $i++;
-                $cat_name=$row['name'];
-                $cat_id=$row['id'];
-
-                echo '<option value='.$cat_id.'>'.$cat_name.'</option>';
-              }
-          }
-          ?>
-          </select>
+          <label class="control-label col-sm-2" for="cat_img">Cover Image</label>
+          <input type="file" id="cat_img" name="file">
         </div>
-      </div>
 
-      <div class="form-group">
-          <label class="control-label col-sm-2" for="product_img">Product Image</label>
-          <input type="file" id="product_img" name="file">
-        </div>
       <div class="form-group"> 
         <div class="col-sm-offset-2 col-sm-10">
           <button type="submit" class="btn btn-success" id="submit">Add</button>
@@ -96,44 +73,35 @@ $category = new MainCategory($dbConnect->getInstance());
 
     <div class="table-container1">
       <table class="table table-bordered table-hover example2">
-      <!-- class="table table-bordered table-hover example2"  -->
-      <!-- <table id="example" class="table table-striped table-bordered" style="width:100%"> -->
         <thead>
           <tr>
             <th>Sr. No.</th>
-            <th>Product Name</th>
-            <th>Description</th>
-            <th>Product Image</th>
-            <th>Date Added</th>
-            <th>Edit</th>
+            <th>Title Text</th>
+            <th>Tag Line</th>
+            <th>Cover Image</th>
             <th>Delete</th>
           </tr>
         </thead>
         <tbody>
         <?php
-        $product = new Product($dbConnect->getInstance());
-        $getProducts = $product->getProducts(0);
+        $home_result = $home->getHome();
         $i = 0;
-        if($getProducts!=null)
+        if($home_result!=null)
         {
-            while($product_row = $getProducts->fetch_assoc())
+            while($row = $home_result->fetch_assoc())
             {
                 $i++;
-                $name=$product_row['name'];
-                $desp=$product_row['desp'];
-                $product_image=$product_row['image'];
-                $cat_id=$product_row['cat_id'];
-                $date_added=$product_row['date_added'];
-                $product_id=$product_row['id'];
+                $title=$row['title'];
+                $tag_line=$row['tag_line'];
+                $cover_image=$row['cover_image'];
+                $home_id=$row['id'];
 
                 echo "<tr>";
                   echo "<td>$i</td>";
-                  echo "<td>$name</td>";
-                  echo "<td>$desp</td>";
-                  echo "<td><a href=product_images/$product_image><center><i style='color:#000000' class='fa fa-eye'><br>View</center></i></a></td>";
-                  echo "<td>$date_added</td>";
-                  echo "<form action=edit.php><td><button type='submit' class='btn btn-warning' name='edit' value='$product_id'>Edit</button></form>";
-                  echo "<form action=delete.php><td><button type='submit' class='btn btn-danger' name='delete' value='$product_id'>Delete</button></td></form>";
+                  echo "<td>$title</td>";
+                  echo "<td>$tag_line</td>";
+                  echo "<td><a href=home_images/$cover_image><center><i style='color:#000000' class='fa fa-eye'><br>View</center></i></a></td>";
+                  echo "<form action=delete.php><td><button type='submit' class='btn btn-danger' name='delete' value='$home_id'>Delete</button></td></form>";
                 echo "<tr>";
             }
         }
@@ -192,7 +160,7 @@ $(document).ready(function(){
     var layout=$("#layout").val();
     // var desp=$("#desp").val();
     var cat_img=$("#cat_img").val();
-    var tag_line=$("#tag").val(); 
+    var tag_line=$("#tag").val();
 
     if(cat_name=="" || cat_img=="" || tag_line=="")
     {
@@ -215,17 +183,21 @@ $(document).ready(function(){
 
 $(document).ready(function(){
 
+  // $("#addSubCategory").submit(function(event){
+  //   event.preventDefault();
+  // });
+
   $("#submit").click(function(){
-    var product_name=$("#name").val();
+    var cat_name=$("#name").val();
     // var passwd=$("#passwd").val();
-    var desp=$("#desp").val();
+    var layout=$("#layout").val();
     // var desp=$("#desp").val();
-    var product_img=$("#product_img").val();
-    var cat=$("#cat").val();
+    var cat_img=$("#cat_img").val();
+    var tag_line=$("#tag").val();
 
     var status = false;
 
-    if(product_name=="" || desp=="" || cat == 0 || product_img=="")
+    if(cat_name=="" || tag_line=="" || cat_img=="")
     {
       var alert_icon = document.createElement('i');
       alert_icon.setAttribute('class', 'fa fa-exclamation-triangle');
@@ -235,23 +207,42 @@ $(document).ready(function(){
     else
     {
       return true;
+      // if(layout != 0)
+      // {
+      //   count = 0;
+      //   $.ajax(
+      //     {
+      //         type: "POST",
+      //         async: false,
+      //         url: "checkLayout.php",
+      //         data: "layout=" + layout,
+      //         success: function (json) {
+      //           console.log(json);
+      //             status = json.status;
+
+      //             // console.log(status);
+      //         }
+      //     });
+      // }
     }
-    
+
+  // if(status == true)
+  // {
+  //   console.log("In if");
+  //   var alert_icon = document.createElement('i');
+  //   alert_icon.setAttribute('class', 'fa fa-exclamation-triangle');
+  //   $("#error").html(alert_icon).append("This layout is already assigned to someother category!");
+  //   return false;
+  // }
+  // else
+  // {
+  //   console.log("In else");
+  //   return true;
+  // }
   });
 });
 
 </script>
-
-<!-- <script>
-$(document).ready(function() {
-    $('#example').DataTable();
-} );
-</script>
-
-<script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap.min.js"></script>
- -->
 <!-- Optionally, you can add Slimscroll and FastClick plugins.
      Both of these plugins are recommended to enhance the
      user experience. Slimscroll is required when using the

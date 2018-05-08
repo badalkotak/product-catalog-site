@@ -23,6 +23,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
         apply the skin class to the body tag so the changes take effect.
   -->
   <link rel="stylesheet" href="../../../Resources/AdminLTE-2.3.11/dist/css/skins/skin-blue.min.css">
+
+  <!-- <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap.min.css"> -->
 </head>
 <!--
 BODY TAG OPTIONS:

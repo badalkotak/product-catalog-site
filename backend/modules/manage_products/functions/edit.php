@@ -12,6 +12,26 @@ $dbConnect = new DBConnect(Constants::SERVER_NAME,
     Constants::DB_NAME);
 
 $category = new MainCategory($dbConnect->getInstance());
+$product = new Product($dbConnect->getInstance());
+
+$product_id=$_REQUEST['edit'];
+
+$getProducts = $product->getDetails($product_id);
+  $i = 0;
+  if($getProducts!=null)
+  {
+    while($product_row = $getProducts->fetch_assoc())
+    {
+        $i++;
+        $name=$product_row['name'];
+        $desp=$product_row['desp'];
+        $product_image=$product_row['image'];
+        $category_id=$product_row['cat_id'];
+        // $date_added=$product_row['date_added'];
+        // $product_id=$product_row['id'];
+    }
+  }
+
 ?>
 <ul class="sidebar-menu">
         <li class="active"><a href="../../login/functions/Dashboard.php"><i class="fa fa-home"></i> <span>Home</span></a></li>
@@ -42,18 +62,22 @@ $category = new MainCategory($dbConnect->getInstance());
     <div class="box">
     <div class="box-body">
 
-    <form class="form-horizontal" action="insert.php" method="post" id="addSubCategory" enctype="multipart/form-data">
+    <form class="form-horizontal" action="update.php" method="post" id="addSubCategory" enctype="multipart/form-data">
       <div class="form-group">
         <label class="control-label col-sm-2" for="name">Product Name:</label>
         <div class="col-sm-10">
-          <input type="text" class="form-control" id="name" name="name">
+          <?php
+            echo '<input type="text" class="form-control" id="name" name="name" value="'.$name.'">';
+          ?>
         </div>
       </div>
 
       <div class="form-group">
         <label class="control-label col-sm-2" for="desp">Description:</label>
         <div class="col-sm-10">
-        <textarea class="form-control" rows="3" id="desp" name="desp"></textarea>
+        <?php
+          echo '<textarea class="form-control" rows="3" id="desp" name="desp">'.$desp.'</textarea>';
+        ?>
         </div>
       </div>
 
@@ -73,7 +97,15 @@ $category = new MainCategory($dbConnect->getInstance());
                 $cat_name=$row['name'];
                 $cat_id=$row['id'];
 
-                echo '<option value='.$cat_id.'>'.$cat_name.'</option>';
+                if($cat_id == $category_id)
+                {
+                  echo '<option value='.$cat_id.' selected>'.$cat_name.'</option>';  
+                }
+                else
+                {
+                  echo '<option value='.$cat_id.'>'.$cat_name.'</option>';
+                }
+                
               }
           }
           ?>
@@ -82,65 +114,26 @@ $category = new MainCategory($dbConnect->getInstance());
       </div>
 
       <div class="form-group">
-          <label class="control-label col-sm-2" for="product_img">Product Image</label>
+          <label class="control-label col-sm-2" for="curr_product_img">Current Product Image</label>
+          <?php
+            echo '<a href="product_images/'.$product_image.'" id="curr_product_img"><center><i style="color:#000000" class="fa fa-eye"><br>View</center></i></a>';
+          ?>
+      </div>
+
+      <div class="form-group">
+          <label class="control-label col-sm-2" for="product_img">Change Product Image</label>
           <input type="file" id="product_img" name="file">
         </div>
       <div class="form-group"> 
         <div class="col-sm-offset-2 col-sm-10">
-          <button type="submit" class="btn btn-success" id="submit">Add</button>
+        <?php
+          echo '<button type="submit" class="btn btn-success" id="submit" name=id value="'.$product_id.'">Done</button>';
+        ?>
         </div>
       </div>
 
       <div style="color:#f56954" id="error"></div>
     </form>
-
-    <div class="table-container1">
-      <table class="table table-bordered table-hover example2">
-      <!-- class="table table-bordered table-hover example2"  -->
-      <!-- <table id="example" class="table table-striped table-bordered" style="width:100%"> -->
-        <thead>
-          <tr>
-            <th>Sr. No.</th>
-            <th>Product Name</th>
-            <th>Description</th>
-            <th>Product Image</th>
-            <th>Date Added</th>
-            <th>Edit</th>
-            <th>Delete</th>
-          </tr>
-        </thead>
-        <tbody>
-        <?php
-        $product = new Product($dbConnect->getInstance());
-        $getProducts = $product->getProducts(0);
-        $i = 0;
-        if($getProducts!=null)
-        {
-            while($product_row = $getProducts->fetch_assoc())
-            {
-                $i++;
-                $name=$product_row['name'];
-                $desp=$product_row['desp'];
-                $product_image=$product_row['image'];
-                $cat_id=$product_row['cat_id'];
-                $date_added=$product_row['date_added'];
-                $product_id=$product_row['id'];
-
-                echo "<tr>";
-                  echo "<td>$i</td>";
-                  echo "<td>$name</td>";
-                  echo "<td>$desp</td>";
-                  echo "<td><a href=product_images/$product_image><center><i style='color:#000000' class='fa fa-eye'><br>View</center></i></a></td>";
-                  echo "<td>$date_added</td>";
-                  echo "<form action=edit.php><td><button type='submit' class='btn btn-warning' name='edit' value='$product_id'>Edit</button></form>";
-                  echo "<form action=delete.php><td><button type='submit' class='btn btn-danger' name='delete' value='$product_id'>Delete</button></td></form>";
-                echo "<tr>";
-            }
-        }
-        ?>
-      </tbody>
-      </table>
-      </div>
 
     </div>
     </div>
@@ -215,6 +208,10 @@ $(document).ready(function(){
 
 $(document).ready(function(){
 
+  // $("#addSubCategory").submit(function(event){
+  //   event.preventDefault();
+  // });
+
   $("#submit").click(function(){
     var product_name=$("#name").val();
     // var passwd=$("#passwd").val();
@@ -225,7 +222,7 @@ $(document).ready(function(){
 
     var status = false;
 
-    if(product_name=="" || desp=="" || cat == 0 || product_img=="")
+    if(product_name=="" || desp=="" || cat == 0)
     {
       var alert_icon = document.createElement('i');
       alert_icon.setAttribute('class', 'fa fa-exclamation-triangle');
@@ -241,17 +238,6 @@ $(document).ready(function(){
 });
 
 </script>
-
-<!-- <script>
-$(document).ready(function() {
-    $('#example').DataTable();
-} );
-</script>
-
-<script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap.min.js"></script>
- -->
 <!-- Optionally, you can add Slimscroll and FastClick plugins.
      Both of these plugins are recommended to enhance the
      user experience. Slimscroll is required when using the

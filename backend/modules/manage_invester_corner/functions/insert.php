@@ -1,26 +1,23 @@
 <?php
 require_once("../../../classes/DBConnect.php");
 require_once("../../../classes/Constants.php");
-require_once("../classes/MainCategory.php");
+require_once("../classes/InvesterCorner.php");
 
-error_reporting(0);
+// error_reporting(0);
 $dbConnect = new DBConnect(Constants::SERVER_NAME,
     Constants::DB_USERNAME,
     Constants::DB_PASSWORD,
     Constants::DB_NAME);
 
-$category = new MainCategory($dbConnect->getInstance());
+$ic = new InvesterCorner($dbConnect->getInstance());
 
 $con = $dbConnect->getInstance();
-
-$name = $_REQUEST['name'];
-$name = mysqli_real_escape_string($con,$name);
-$layout = $_REQUEST['layout'];
-$file_name=$_FILES['file']['name'];
-$tag_line=$_REQUEST['tag'];
-$tag_line = mysqli_real_escape_string($con,$tag_line);
+$title=$_REQUEST['title'];
+$title = mysqli_real_escape_string($con,$title);
 $url_file=$_FILE['file'];
-if($name=="" || $tag_line=="" || $file_name=="")
+$today = date("d/m/Y");
+
+if($title == "" || $url_file == "")
 {
 	$message = Constants::EMPTY_PARAMETERS;
 	echo "<script>alert($message);window.location.href='index.php';</script>";
@@ -39,7 +36,7 @@ function generatePassword($length = 4) {
 }
 $fileName=generatePassword();
 
-$targetfolder = "cover_images/";
+$targetfolder = "files/";
 $file_type=$_FILES['file']['type'];
 $target_file = $targetfolder . basename($_FILES["file"]["name"]);
 $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
@@ -49,23 +46,23 @@ $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
 
 	if(move_uploaded_file($_FILES['file']['tmp_name'], $targetfolder))
 	{
-		$insert=$category->insertCategory($name,$newFileName,$tag_line,$layout);
+		$insert=$ic->insertIC($title,$today,$newFileName);
 
 		if($insert)
 		{
-			$message = "New Category is ".Constants::INSERT_SUCCESS_MSG;
+			$message = "New Entry is ".Constants::INSERT_SUCCESS_MSG;
 			echo "<script>alert('$message');window.location.href='index.php';</script>";
 		}
 		else
 		{
 			unlink($targetfolder);
-			$message = Constants::INSERT_FAIL_MSG."Category";
+			$message = Constants::INSERT_FAIL_MSG."Entry";
 			echo "<script>alert('$message');window.location.href='index.php';</script>";	
 		}
 	}
 	else
 	{
-		$message = "Problem in uploading Cover Image";
+		$message = "Problem in uploading File";
 		echo "<script>alert('$message');window.location.href='index.php';</script>";
 	}
 ?>

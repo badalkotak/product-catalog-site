@@ -13,7 +13,7 @@ $dbConnect = new DBConnect(Constants::SERVER_NAME,
 $category = new MainCategory($dbConnect->getInstance());
 ?>
 <ul class="sidebar-menu">
-        <li class="active"><a href="#"><i class="fa fa-home"></i> <span>Home</span></a></li>
+        <li class="active"><a href="../../login/functions/Dashboard.php"><i class="fa fa-home"></i> <span>Home</span></a></li>
         <!-- <li><a href="#"><i class="fa fa-link"></i> <span>Another Link</span></a></li> -->
       </ul>
       <!-- /.sidebar-menu -->
@@ -78,7 +78,7 @@ $category = new MainCategory($dbConnect->getInstance());
       </div>
 
       <div class="form-group">
-          <label class="control-label col-sm-2" for="cat_img">Change Cover Image</label>
+          <label class="control-label col-sm-2" for="cat_img">Cover Image</label>
           <input type="file" id="cat_img" name="file">
         </div>
       <div class="form-group"> 
@@ -174,7 +174,7 @@ $category = new MainCategory($dbConnect->getInstance());
 <!-- AdminLTE App -->
 <script src="../../../Resources/AdminLTE-2.3.11/dist/js/app.min.js"></script>
 
-<script>
+<!-- <script>
 
 $(document).ready(function(){
 
@@ -205,7 +205,71 @@ $(document).ready(function(){
 });
 
 </script>
+ -->
 
+ <script>
+
+$(document).ready(function(){
+
+  // $("#addSubCategory").submit(function(event){
+  //   event.preventDefault();
+  // });
+
+  $("#submit").click(function(){
+    var cat_name=$("#name").val();
+    // var passwd=$("#passwd").val();
+    var layout=$("#layout").val();
+    // var desp=$("#desp").val();
+    var cat_img=$("#cat_img").val();
+    var tag_line=$("#tag").val();
+
+    var status = false;
+
+    if(cat_name=="" || tag_line=="")
+    {
+      var alert_icon = document.createElement('i');
+      alert_icon.setAttribute('class', 'fa fa-exclamation-triangle');
+      $("#error").html(alert_icon).append("Please input all the fields!");
+      return false;
+    }
+    else
+    {
+      if(layout != 0)
+      {
+        count = 0;
+        $.ajax(
+          {
+              type: "POST",
+              async: false,
+              url: "checkLayout.php",
+              data: "layout=" + layout,
+              success: function (json) {
+                console.log(json);
+                  status = json.status;
+
+                  // console.log(status);
+              }
+          });
+      }
+    }
+
+  if(status == true)
+  {
+    console.log("In if");
+    var alert_icon = document.createElement('i');
+    alert_icon.setAttribute('class', 'fa fa-exclamation-triangle');
+    $("#error").html(alert_icon).append("This layout is already assigned to someother category!");
+    return false;
+  }
+  else
+  {
+    console.log("In else");
+    return true;
+  }
+  });
+});
+
+</script>
 <!-- Optionally, you can add Slimscroll and FastClick plugins.
      Both of these plugins are recommended to enhance the
      user experience. Slimscroll is required when using the

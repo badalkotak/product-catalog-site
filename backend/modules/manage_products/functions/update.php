@@ -1,26 +1,26 @@
 <?php
 require_once("../../../classes/DBConnect.php");
 require_once("../../../classes/Constants.php");
-require_once("../classes/MainCategory.php");
+require_once("../classes/Product.php");
 
 $dbConnect = new DBConnect(Constants::SERVER_NAME,
     Constants::DB_USERNAME,
     Constants::DB_PASSWORD,
     Constants::DB_NAME);
 
-$category = new MainCategory($dbConnect->getInstance());
+$product = new Product($dbConnect->getInstance());
 
 $con = $dbConnect->getInstance();
-$name = $_REQUEST['name'];
+$name=$_REQUEST['name'];
 $name = mysqli_real_escape_string($con,$name);
-$layout = $_REQUEST['layout'];
+$desp=$_REQUEST['desp'];
+$desp = mysqli_real_escape_string($con,$desp);
+$cat_id=$_REQUEST['cat'];
+$url_file=$_FILE['file'];
 $file_name=$_FILES['file']['name'];
-$tag_line=$_REQUEST['tag'];
-$tag_line = mysqli_real_escape_string($con,$tag_line);
-$oldImg=$_REQUEST['oldImg'];
-$cat_id=$_REQUEST['id'];
-// $url_file=$_FILE['file'];
-if($name=="" || $tag_line=="")
+$product_id=$_REQUEST['id'];
+
+if($name=="" || $desp=="" || $cat_id==0)
 {
 	$message = Constants::EMPTY_PARAMETERS;
 	echo "<script>alert($message);window.location.href='index.php';</script>";
@@ -42,7 +42,7 @@ if($file_name != "")
 {
 	$fileName=generatePassword();
 
-	$targetfolder = "cover_images/";
+	$targetfolder = "product_images/";
 	$file_type=$_FILES['file']['type'];
 	$target_file = $targetfolder . basename($_FILES["file"]["name"]);
 	$imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
@@ -55,25 +55,25 @@ if($file_name != "")
 	if(move_uploaded_file($_FILES['file']['tmp_name'], $targetfolder))
 	{
 
-		$update=$category->updateCategory($cat_id,$name,$newFileName,$tag_line,$layout);
+		$update=$product->updateProduct($name,$desp,$newFileName,$cat_id,$product_id);
 
 		if($update)
 		{
-			unlink('cover_images/'.$oldImg);
-			$message = "New Category is ".Constants::UPDATE_SUCCESS_MSG;
+			// unlink('product_images/'.$oldImg);
+			$message = "Product is ".Constants::UPDATE_SUCCESS_MSG;
 			echo "<script>alert('$message');window.location.href='index.php';</script>";
 		}
 		else
 		{
 			unlink($targetfolder);
-			$message = Constants::UPDATE_FAIL_MSG."Category";
+			$message = Constants::UPDATE_FAIL_MSG."Product";
 			echo "<script>alert('$message');window.location.href='index.php';</script>";	
 		}
 
 	}
 	else
 	{
-		$message = "Problem in uploading Cover Image";
+		$message = "Problem in uploading Product Image";
 		echo "<script>alert('$message');window.location.href='index.php';</script>";
 	}
 }
@@ -82,16 +82,16 @@ else
 {
 	// echo "In else";
 	$newFileName = "";
-	$update=$category->updateCategory($cat_id,$name,$newFileName,$tag_line,$layout);
+	$update=$product->updateProduct($name,$desp,$newFileName,$cat_id,$product_id);
 
 	if($update)
 	{
-		$message = "New Category is ".Constants::UPDATE_SUCCESS_MSG;
+		$message = "Product is ".Constants::UPDATE_SUCCESS_MSG;
 		echo "<script>alert('$message');window.location.href='index.php';</script>";
 	}
 	else
 	{
-		$message = Constants::UPDATE_FAIL_MSG."Category";
+		$message = Constants::UPDATE_FAIL_MSG."Product";
 		echo "<script>alert('$message');window.location.href='index.php';</script>";	
 	}
 }

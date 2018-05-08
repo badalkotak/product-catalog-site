@@ -50,7 +50,7 @@ else
     <section class="content-header">
       <h1>
         Main Category
-        <small>Manage your website categories</small>
+        <small>Edit category</small>
       </h1>
       <!-- <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
@@ -192,6 +192,13 @@ $(document).ready(function(){
     // var desp=$("#desp").val();
     var cat_img=$("#cat_img").val();
     var tag_line=$("#tag").val();
+    <?php
+      echo 'var cat_id='.$cat_id.';';
+    ?>
+
+    console.log("ID:"+cat_id);
+
+    var status = false;
 
     if(cat_name=="" || tag_line=="")
     {
@@ -202,8 +209,40 @@ $(document).ready(function(){
     }
     else
     {
-      return true;
+    	if(layout != 0)
+    	{
+    		count = 0;
+	    	$.ajax(
+	        {
+	            type: "POST",
+	            async: false,
+	            url: "checkLayout.php",
+	            data: "layout=" + layout + "&id="+ cat_id,
+	            success: function (json) {
+	            	console.log(json);
+	                status = json.status;
+
+	                // console.log(status);
+	            }
+	        });
+    	}
     }
+
+	if(status == true)
+	{
+		console.log("In if");
+		var alert_icon = document.createElement('i');
+		alert_icon.setAttribute('class', 'fa fa-exclamation-triangle');
+		$("#error").html(alert_icon).append("This layout is already assigned to someother category!");
+		return false;
+	}
+	else
+	{
+		console.log("In else");
+		return true;
+	}
+
+  // return false;
   });
 });
 

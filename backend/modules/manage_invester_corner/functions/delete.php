@@ -1,28 +1,29 @@
 <?php
 require_once("../../../classes/DBConnect.php");
 require_once("../../../classes/Constants.php");
-require_once("../classes/Product.php");
+require_once("../classes/InvesterCorner.php");
 
+// error_reporting(0);
 $dbConnect = new DBConnect(Constants::SERVER_NAME,
     Constants::DB_USERNAME,
     Constants::DB_PASSWORD,
     Constants::DB_NAME);
 
-$product = new Product($dbConnect->getInstance());
+$ic = new InvesterCorner($dbConnect->getInstance());
 
-$id=$_REQUEST['delete'];
+$ic_id=$_REQUEST['delete'];
 
-$delete = $product->deleteProduct($id);
+$delete=$ic->deleteIC($ic_id);
 
 if($delete)
 {
 	// unlink('product_images/'.$oldImg);
-	$message = "Product is ".Constants::DELETE_SUCCESS_MSG;
+	$message = "Entry is ".Constants::DELETE_SUCCESS_MSG;
 	echo "<script>alert('$message');window.location.href='index.php';</script>";
 }
 else
 {
-	$message = Constants::DELETE_FAIL_MSG."Product";
+	$message = Constants::DELETE_FAIL_MSG."Entry";
 	echo "<script>alert('$message');window.location.href='index.php';</script>";	
 }
 ?>
